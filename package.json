@@ -1,0 +1,24 @@
+{
+  "name": "date-service",
+  "version": "0.0.1",
+  "description": "Date manipulation and appointment microservice",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/osu-cs-361/date-microservice.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/osu-cs-361/date-microservice/issues"
+  },
+  "homepage": "https://github.com/osu-cs-361/date-microservice#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
