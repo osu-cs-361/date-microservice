@@ -40,12 +40,10 @@ app.get("/interval/:interval_length", (req, res) => {
 
     // Calculate interval and send response
     const interval = Interval.fromDateTimes(start_date, end_date);
-    res.status(200).send(
-      JSON.stringify({
-        interval_length: req.params.interval_length,
-        interval: interval.length(`${req.params.interval_length}`),
-      })
-    );
+    res.status(200).send({
+      interval_length: req.params.interval_length,
+      interval: interval.length(`${req.params.interval_length}`),
+    });
   } catch (e) {
     if (e.statusCode) {
       // e.statusCode => dev-defined error, safe to send to user
