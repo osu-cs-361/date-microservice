@@ -1,8 +1,9 @@
 const express = require("express");
-const { DateTime, Interval } = require("luxon");
+const { Interval } = require("luxon");
 
 const { getStartAndEnd, getStartAndDuration } = require("./utils/QueryParser");
 const DateTimeError = require("./utils/DateTimeError");
+const ErrorHandler = require("./utils/ErrorHandler");
 
 const APP_PORT = process.argv[2] || 3030;
 
@@ -18,7 +19,7 @@ app.get("/healthcheck", (_, res) => {
 
 // Returns time interval between "start" and "end" query params
 // Interval is in units given by "interval_length" url param
-app.get("/interval/:interval_length", (req, res) => {
+app.get("/interval/:interval_length", (req, res, next) => {
   try {
     // Check interval length exists and is valid
     if (!req.params.interval_length) {
@@ -35,25 +36,11 @@ app.get("/interval/:interval_length", (req, res) => {
       interval: interval.length(`${req.params.interval_length}`),
     });
   } catch (e) {
-    if (e.statusCode) {
-      // e.statusCode => dev-defined error, safe to send to user
-      res.status(e.statusCode).send(e.message);
-    } else if (e.message.startsWith("Invalid unit")) {
-      // Luxon InvalidUnitError, ok to send
-      res.status(400).send(e.message);
-    } else {
-      // server error, not safe to send to user
-      console.error(
-        "\x1b[31m%s\x1b[0m", // red
-        "ERROR: /interval endpoint failed: ",
-        e
-      );
-      res.sendStatus(500);
-    }
+    next(e);
   }
 });
 
-app.get("/add/:duration_interval", (req, res) => {
+app.get("/add/:duration_interval", (req, res, next) => {
   try {
     // Check duration interval exists and is valid
     if (!req.params.duration_interval) {
@@ -66,25 +53,11 @@ app.get("/add/:duration_interval", (req, res) => {
     // Calculate new DateTime and send response
     res.status(200).send({ date: startDate.plus(duration).toISO() });
   } catch (e) {
-    if (e.statusCode) {
-      // e.statusCode => dev-defined error, safe to send to user
-      res.status(e.statusCode).send(e.message);
-    } else if (e.message.startsWith("Invalid unit")) {
-      // Luxon InvalidUnitError, ok to send
-      res.status(400).send(e.message);
-    } else {
-      // server error, not safe to send to user
-      console.error(
-        "\x1b[31m%s\x1b[0m", // red
-        "ERROR: /interval endpoint failed: ",
-        e
-      );
-      res.sendStatus(500);
-    }
+    next(e);
   }
 });
 
-app.get("/subtract/:duration_interval", (req, res) => {
+app.get("/subtract/:duration_interval", (req, res, next) => {
   try {
     // Check duration interval exists and is valid
     if (!req.params.duration_interval) {
@@ -97,23 +70,11 @@ app.get("/subtract/:duration_interval", (req, res) => {
     // Calculate new DateTime and send response
     res.status(200).send({ date: startDate.minus(duration).toISO() });
   } catch (e) {
-    if (e.statusCode) {
-      // e.statusCode => dev-defined error, safe to send to user
-      res.status(e.statusCode).send(e.message);
-    } else if (e.message.startsWith("Invalid unit")) {
-      // Luxon InvalidUnitError, ok to send
-      res.status(400).send(e.message);
-    } else {
-      // server error, not safe to send to user
-      console.error(
-        "\x1b[31m%s\x1b[0m", // red
-        "ERROR: /interval endpoint failed: ",
-        e
-      );
-      res.sendStatus(500);
-    }
+    next(e);
   }
 });
+
+app.use(ErrorHandler);
 
 app.listen(app.get("port"), () => {
   console.log(`Date service listening on port ${app.get("port")}`);
