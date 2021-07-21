@@ -13,6 +13,7 @@ app.set("port", APP_PORT);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint: returns 200 if server is OK.
 app.get("/healthcheck", (_, res) => {
   res.sendStatus(200);
 });
@@ -40,6 +41,8 @@ app.get("/interval/:interval_length", (req, res, next) => {
   }
 });
 
+// Returns a DateTime equal to the "start" query param plus the given number
+// ("amount" query param) of intervals ("duration_interval" URL param).
 app.get("/add/:duration_interval", (req, res, next) => {
   try {
     // Check duration interval exists and is valid
@@ -57,6 +60,8 @@ app.get("/add/:duration_interval", (req, res, next) => {
   }
 });
 
+// Returns a DateTime equal to the "start" query param minus the given number
+// ("amount" query param) of intervals ("duration_interval" URL param).
 app.get("/subtract/:duration_interval", (req, res, next) => {
   try {
     // Check duration interval exists and is valid
@@ -74,6 +79,7 @@ app.get("/subtract/:duration_interval", (req, res, next) => {
   }
 });
 
+// Error handler: returns 4xx with error message if user error or 500
 app.use(ErrorHandler);
 
 app.listen(app.get("port"), () => {
