@@ -1,6 +1,7 @@
 const express = require("express");
 const { DateTime, Interval } = require("luxon");
 
+const { getStartAndEnd, getStartAndDuration } = require("./utils/QueryParser");
 const DateTimeError = require("./utils/DateTimeError");
 
 const APP_PORT = process.argv[2] || 3030;
@@ -25,18 +26,7 @@ app.get("/interval/:interval_length", (req, res) => {
     }
 
     // Get start and end dates from query
-    const endDate = DateTime.fromJSDate(
-      req.query.end ? new Date(req.query.end) : new Date(Date.now())
-    );
-    const startDate = DateTime.fromJSDate(new Date(req.query.start));
-
-    // Check valid DateTimes and Interval
-    if (!(startDate.isValid && endDate.isValid)) {
-      throw new DateTimeError("Invalid date format.");
-    }
-    if (endDate.valueOf() < startDate.valueOf()) {
-      throw new DateTimeError("Start date must be before end date.");
-    }
+    const { startDate, endDate } = getStartAndEnd(req);
 
     // Calculate interval and send response
     const interval = Interval.fromDateTimes(startDate, endDate);
