@@ -25,21 +25,21 @@ app.get("/interval/:interval_length", (req, res) => {
     }
 
     // Get start and end dates from query
-    const end_date = DateTime.fromJSDate(
+    const endDate = DateTime.fromJSDate(
       req.query.end ? new Date(req.query.end) : new Date(Date.now())
     );
-    const start_date = DateTime.fromJSDate(new Date(req.query.start));
+    const startDate = DateTime.fromJSDate(new Date(req.query.start));
 
     // Check valid DateTimes and Interval
-    if (!(start_date.isValid && end_date.isValid)) {
+    if (!(startDate.isValid && endDate.isValid)) {
       throw new DateTimeError("Invalid date format.");
     }
-    if (end_date.valueOf() < start_date.valueOf()) {
+    if (endDate.valueOf() < startDate.valueOf()) {
       throw new DateTimeError("Start date must be before end date.");
     }
 
     // Calculate interval and send response
-    const interval = Interval.fromDateTimes(start_date, end_date);
+    const interval = Interval.fromDateTimes(startDate, endDate);
     res.status(200).send({
       interval_length: req.params.interval_length,
       interval: interval.length(`${req.params.interval_length}`),
