@@ -2,6 +2,7 @@ const express = require("express");
 const { Interval } = require("luxon");
 
 const { getStartAndEnd, getStartAndDuration } = require("./utils/QueryParser");
+const { getEvent } = require("./utils/BodyParser");
 const DateTimeError = require("./utils/DateTimeError");
 const ErrorHandler = require("./utils/ErrorHandler");
 const db = require("./utils/DatabaseUtility");
@@ -87,6 +88,33 @@ app.get("/subtract/:duration_interval", (req, res, next) => {
     next(e);
   }
 });
+
+// PROTECTED ROUTE
+// Saves a new event to the database. Associates the event with the user who owns the authorization token.
+// Requires start and end properties in request's JSON payload.
+// Optionally accepts name property in request's JSON payload.
+app.post(
+  "/new-event",
+  authRoute(pool.getConnection()),
+  async (req, res, next) => {
+    try {
+      const connection = await pool.getConnection();
+      const { name, start, end } = getEvent(req);
+      const result = await connection.query(
+        "INSERT INTO Event (name, start, end, user_id) VALUES (?, ?, ?, ?)",
+        [
+          name,
+          start.toSQL({ includeOffset: false }),
+          end.toSQL({ includeOffset: false }),
+          res.locals.userId,
+        ]
+      );
+      res.status(201).send({ name, start: start.toISO(), end: end.toISO() });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
 
 // Error handler: returns 4xx with error message if user error or 500
 app.use(ErrorHandler);
