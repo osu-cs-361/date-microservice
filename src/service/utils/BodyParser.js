@@ -1,4 +1,5 @@
 const { DateTime } = require("luxon");
+const DateTimeError = require("./DateTimeError");
 
 const getEvent = (req) => {
   const name = req.body.name ? req.body.name : "NULL";
