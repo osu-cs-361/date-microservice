@@ -91,6 +91,7 @@ app.get("/subtract/:duration_interval", (req, res, next) => {
 
 // PROTECTED ROUTE
 // Saves a new event to the database. Associates the event with the user who owns the authorization token.
+// Returns a JSON payload containing the details of the event that was added.
 // Requires start and end properties in request's JSON payload.
 // Optionally accepts name property in request's JSON payload.
 app.post(
@@ -109,7 +110,17 @@ app.post(
           res.locals.userId,
         ]
       );
-      res.status(201).send({ name, start: start.toISO(), end: end.toISO() });
+      res.status(201).send({
+        id: result.insertId,
+        name,
+        start: start.toISO(),
+        end: end.toISO(),
+      });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
     } catch (e) {
       next(e);
     }
