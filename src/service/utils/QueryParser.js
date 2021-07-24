@@ -14,7 +14,7 @@ getStartAndEnd = (req, { endOptional = true, enforceOrder = true } = {}) => {
 
   // Check valid DateTimes and Interval
   if (!(startDate.isValid && endDate.isValid)) {
-    throw new DateTimeError("Invalid date format.");
+    throw new DateTimeError("Invalid start or end date provided.");
   }
   if (enforceOrder && endDate.valueOf() < startDate.valueOf()) {
     throw new DateTimeError("Start date must be before end date.");
