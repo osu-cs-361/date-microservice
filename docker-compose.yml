@@ -1,4 +1,3 @@
-# version: "0.1"
 services:
   server:
     build: ./src/service
@@ -9,3 +8,5 @@ services:
     environment:
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "true"
       MARIADB_DATABASE: "test"
+    volumes:
+      - ./src/db/data:/var/lib/mysql
