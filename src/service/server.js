@@ -30,7 +30,7 @@ app.get("/healthcheck", (_, res) => {
 
 // Returns time interval between "start" and "end" query params
 // Interval is in units given by "interval_length" url param
-app.get("/interval/:interval_length", (req, res, next) => {
+app.get("/datetime/interval/:interval_length", (req, res, next) => {
   try {
     // Check interval length exists and is valid
     if (!req.params.interval_length) {
@@ -53,7 +53,7 @@ app.get("/interval/:interval_length", (req, res, next) => {
 
 // Returns a DateTime equal to the "start" query param plus the given number
 // ("amount" query param) of intervals ("duration_interval" URL param).
-app.get("/add/:duration_interval", (req, res, next) => {
+app.get("/datetime/add/:duration_interval", (req, res, next) => {
   try {
     // Check duration interval exists and is valid
     if (!req.params.duration_interval) {
@@ -72,7 +72,7 @@ app.get("/add/:duration_interval", (req, res, next) => {
 
 // Returns a DateTime equal to the "start" query param minus the given number
 // ("amount" query param) of intervals ("duration_interval" URL param).
-app.get("/subtract/:duration_interval", (req, res, next) => {
+app.get("/datetime/subtract/:duration_interval", (req, res, next) => {
   try {
     // Check duration interval exists and is valid
     if (!req.params.duration_interval) {
@@ -154,6 +154,20 @@ app.put("/edit-event/:id", authRoute(pool), async (req, res, next) => {
     queryParams.push(req.params.id, res.locals.userId);
     const result = await pool.query(query, queryParams);
     res.status(200).send({ affectedRows: result.affectedRows, ...req.body });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// PROTECTED ROUTE
+// Deletes the event with the given id. The event must be associated with the user who owns the authorization token.
+app.put("/delete-event/:id", authRoute(pool), async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      "DELETE FROM Event WHERE id=? AND user_id=?",
+      [req.params.id, res.locals.userId]
+    );
+    res.status(200).send({ affectedRows: result.affectedRows });
   } catch (e) {
     next(e);
   }
