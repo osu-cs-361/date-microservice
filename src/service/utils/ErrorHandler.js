@@ -14,7 +14,7 @@ module.exports = (err, req, res, next) => {
     // server error, not safe to send to user
     console.error(
       "\x1b[31m%s\x1b[0m", // red
-      "ERROR: /interval endpoint failed: ",
+      `ERROR: ${req.route.path} endpoint failed: `,
       err
     );
     res.sendStatus(500);
