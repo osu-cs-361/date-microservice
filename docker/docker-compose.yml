@@ -1,0 +1,11 @@
+services:
+  server:
+    environment:
+      NODE_ENV: "production"
+    build: ../src/service
+    ports:
+      - "3030:3030"
+  db:
+    build: ../src/db
+    volumes:
+      - ../src/db/data:/var/lib/mysql

@@ -1,0 +1,11 @@
+services:
+  server:
+    environment:
+      NODE_ENV: "development"
+    volumes:
+      - ../src/service:/usr/src/app
+    command: ["npx", "nodemon", "--legacy-watch", "server.js"]
+  db:
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "true"
+      MARIADB_DATABASE: "test"
