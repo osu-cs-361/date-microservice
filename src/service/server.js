@@ -90,6 +90,21 @@ app.get("/subtract/:duration_interval", (req, res, next) => {
 });
 
 // PROTECTED ROUTE
+// Returns a list of all events associated with the user who owns the authorization token.
+app.get("/events", authRoute(pool.getConnection()), async (_, res, next) => {
+  try {
+    const connection = await pool.getConnection();
+    const events = await connection.query(
+      "SELECT id, name, start, end FROM Event WHERE user_id=?",
+      [res.locals.userId]
+    );
+    res.status(200).send(events);
+  } catch (e) {
+    next(e);
+  }
+});
+
+// PROTECTED ROUTE
 // Saves a new event to the database. Associates the event with the user who owns the authorization token.
 // Returns a JSON payload containing the details of the event that was added.
 // Requires start and end properties in request's JSON payload.
