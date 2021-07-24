@@ -13,4 +13,25 @@ const getEvent = (req) => {
   return { name, start, end };
 };
 
+const getExistingEventAttributes = (req) => {
+  const output = {};
+  if (req.body.name) {
+    output.name = req.body.name;
+  }
+  if (req.body.start) {
+    output.start = DateTime.fromJSDate(new Date(req.body.start));
+  }
+  if (req.body.end) {
+    output.end = DateTime.fromJSDate(new Date(req.body.end));
+  }
+  if (output.start && !output.start.isValid) {
+    throw new DateTimeError("Invalid start date provided.");
+  }
+  if (output.end && !output.end.isValid) {
+    throw new DateTimeError("Invalid end date provided.");
+  }
+  return output;
+};
+
 module.exports.getEvent = getEvent;
+module.exports.getExistingEventAttributes = getExistingEventAttributes;

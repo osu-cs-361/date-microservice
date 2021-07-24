@@ -1,8 +1,8 @@
 const express = require("express");
-const { Interval } = require("luxon");
+const { DateTime, Interval } = require("luxon");
 
 const { getStartAndEnd, getStartAndDuration } = require("./utils/QueryParser");
-const { getEvent } = require("./utils/BodyParser");
+const { getEvent, getExistingEventAttributes } = require("./utils/BodyParser");
 const DateTimeError = require("./utils/DateTimeError");
 const ErrorHandler = require("./utils/ErrorHandler");
 const db = require("./utils/DatabaseUtility");
@@ -109,26 +109,54 @@ app.get("/events", authRoute(pool), async (_, res, next) => {
 // Requires start and end properties in request's JSON payload.
 // Optionally accepts name property in request's JSON payload.
 app.post("/new-event", authRoute(pool), async (req, res, next) => {
-    try {
-      const { name, start, end } = getEvent(req);
+  try {
+    const { name, start, end } = getEvent(req);
     const result = await pool.query(
       "INSERT INTO Event (name, start, end, user_id) VALUES (?, ?, ?, ?);",
-        [
-          name,
-          start.toSQL({ includeOffset: false }),
-          end.toSQL({ includeOffset: false }),
-          res.locals.userId,
-        ]
-      );
-      res.status(201).send({
-        id: result.insertId,
+      [
         name,
-        start: start.toISO(),
-        end: end.toISO(),
-      });
-    } catch (e) {
-      next(e);
+        start.toSQL({ includeOffset: false }),
+        end.toSQL({ includeOffset: false }),
+        res.locals.userId,
+      ]
+    );
+    res.status(201).send({
+      id: result.insertId,
+      name,
+      start: start.toISO(),
+      end: end.toISO(),
+    });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// PROTECTED ROUTE
+// Updates the event with the given id using the provided data. The event must be associated with the user who owns the authorization token.
+// Returns a JSON payload containing the details of the updated event.
+// Takes any combination of name, start, and/or end properties in request's JSON payload.
+app.put("/edit-event/:id", authRoute(pool), async (req, res, next) => {
+  try {
+    const event = getExistingEventAttributes(req);
+
+    // Build query from existing attributes
+    const queryParams = [];
+    let query = "UPDATE Event SET ";
+    for (attribute in event) {
+      query = query + attribute + "=?, ";
+      if (event[attribute] instanceof DateTime) {
+        queryParams.push(event[attribute].toSQL({ includeOffset: false }));
+      } else {
+        queryParams.push(event[attribute]);
+      }
     }
+    query = query.slice(0, query.length - 2) + " WHERE id=? AND user_id=?;";
+    queryParams.push(req.params.id, res.locals.userId);
+    const result = await pool.query(query, queryParams);
+    res.status(200).send({ affectedRows: result.affectedRows, ...req.body });
+  } catch (e) {
+    next(e);
+  }
 });
 
 // Error handler: returns 4xx with error message if user error or 500
