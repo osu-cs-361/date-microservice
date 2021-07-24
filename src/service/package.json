@@ -4,7 +4,7 @@
   "description": "Date manipulation and appointment microservice",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon src/server.js"
+    "start": "npx nodemon server.js"
   },
   "repository": {
     "type": "git",
