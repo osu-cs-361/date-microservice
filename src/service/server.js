@@ -5,6 +5,7 @@ const { getStartAndEnd, getStartAndDuration } = require("./utils/QueryParser");
 const DateTimeError = require("./utils/DateTimeError");
 const ErrorHandler = require("./utils/ErrorHandler");
 const db = require("./utils/DatabaseUtility");
+const authRoute = require("./utils/RouteAuthenticationMiddleware");
 
 const APP_PORT = process.argv[2] || 3030;
 const DB_HOST = process.env.DATE_DB_HOST || "db";
