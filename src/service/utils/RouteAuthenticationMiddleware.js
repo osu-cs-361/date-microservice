@@ -6,7 +6,7 @@ class AuthenticationError extends Error {
   }
 }
 
-module.exports = (connectionPromise) => {
+module.exports = (pool) => {
   return async (req, res, next) => {
     try {
       const authHeader = req.header("Authorization");
@@ -14,8 +14,7 @@ module.exports = (connectionPromise) => {
         throw new AuthenticationError();
       } else {
         const token = authHeader.replace("Bearer ", "");
-        const connection = await connectionPromise;
-        const users = await connection.query(
+        const users = await pool.query(
           "SELECT id, email FROM User WHERE token=?",
           [token]
         );

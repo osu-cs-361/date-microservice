@@ -91,11 +91,10 @@ app.get("/subtract/:duration_interval", (req, res, next) => {
 
 // PROTECTED ROUTE
 // Returns a list of all events associated with the user who owns the authorization token.
-app.get("/events", authRoute(pool.getConnection()), async (_, res, next) => {
+app.get("/events", authRoute(pool), async (_, res, next) => {
   try {
-    const connection = await pool.getConnection();
-    const events = await connection.query(
-      "SELECT id, name, start, end FROM Event WHERE user_id=?",
+    const events = await pool.query(
+      "SELECT id, name, start, end FROM Event WHERE user_id=?;",
       [res.locals.userId]
     );
     res.status(200).send(events);
@@ -109,15 +108,11 @@ app.get("/events", authRoute(pool.getConnection()), async (_, res, next) => {
 // Returns a JSON payload containing the details of the event that was added.
 // Requires start and end properties in request's JSON payload.
 // Optionally accepts name property in request's JSON payload.
-app.post(
-  "/new-event",
-  authRoute(pool.getConnection()),
-  async (req, res, next) => {
+app.post("/new-event", authRoute(pool), async (req, res, next) => {
     try {
-      const connection = await pool.getConnection();
       const { name, start, end } = getEvent(req);
-      const result = await connection.query(
-        "INSERT INTO Event (name, start, end, user_id) VALUES (?, ?, ?, ?)",
+    const result = await pool.query(
+      "INSERT INTO Event (name, start, end, user_id) VALUES (?, ?, ?, ?);",
         [
           name,
           start.toSQL({ includeOffset: false }),
@@ -134,13 +129,7 @@ app.post(
     } catch (e) {
       next(e);
     }
-  }
-);
-    } catch (e) {
-      next(e);
-    }
-  }
-);
+});
 
 // Error handler: returns 4xx with error message if user error or 500
 app.use(ErrorHandler);
