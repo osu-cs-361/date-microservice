@@ -30,6 +30,7 @@ app.get("/healthcheck", (_, res) => {
 
 // Returns time interval between "start" and "end" query params
 // Interval is in units given by "interval_length" url param
+// If no "end" param is passed, calculates time from "start" param until now.
 app.get("/datetime/interval/:interval_length", (req, res, next) => {
   try {
     // Check interval length exists and is valid
