@@ -22,7 +22,7 @@ Returns HTTP 200. Use to check if server is running and able to serve responses.
 /datetime/interval/:interval_length GET
 query params: 
   start (Date string)
-  end (Date string)
+  end (Date string, optional)
 ```
 
 Returns the time interval between `start` and `end` query parameters and the provided interval length. Interval is in units given by `interval_length` url parameter. If no `end` param is passed, interval from `start` param until now is returned.  
