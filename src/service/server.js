@@ -12,11 +12,12 @@ const APP_PORT = process.argv[2] || 3030;
 const DB_HOST = process.env.DATE_DB_HOST || "db";
 const TARGET_DB = process.env.TARGET_DB || "test";
 const DB_PASSWORD = process.env.DB_PASSWORD || "";
+const DB_USER = process.env.DB_USER || "root";
 
 const app = new express();
 const pool = db.getDbPool({
   host: DB_HOST,
-  user: "root",
+  user: DB_USER,
   password: DB_PASSWORD,
   database: TARGET_DB,
   connectionLimit: 5,

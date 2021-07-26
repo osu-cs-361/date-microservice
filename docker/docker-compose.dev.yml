@@ -4,6 +4,7 @@ services:
       NODE_ENV: "development"
       TARGET_DB: "test"
       DB_PASSWORD: ""
+      DB_USER: "root"
     volumes:
       - ../src/service:/usr/src/app
     command: ["npx", "nodemon", "--legacy-watch", "server.js"]
