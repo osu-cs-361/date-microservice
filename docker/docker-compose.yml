@@ -2,10 +2,15 @@ services:
   server:
     environment:
       NODE_ENV: "production"
+      TARGET_DB: "date-service"
+      DB_PASSWORD: "${DATE_SERVICE_DB_PASSWORD}"
     build: ../src/service
     ports:
       - "3030:3030"
   db:
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DATE_SERVICE_DB_PASSWORD}"
+      MARIADB_DATABASE: "date-service"
     build: ../src/db
     volumes:
       - ../src/db/data:/var/lib/mysql

@@ -2,10 +2,13 @@ services:
   server:
     environment:
       NODE_ENV: "development"
+      TARGET_DB: "test"
+      DB_PASSWORD: ""
     volumes:
       - ../src/service:/usr/src/app
     command: ["npx", "nodemon", "--legacy-watch", "server.js"]
   db:
     environment:
+      MARIADB_ROOT_PASSWORD: ""
       MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "true"
       MARIADB_DATABASE: "test"
