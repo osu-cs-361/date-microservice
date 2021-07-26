@@ -161,13 +161,13 @@ app.put("/edit-event/:id", authRoute(pool), async (req, res, next) => {
 
 // PROTECTED ROUTE
 // Deletes the event with the given id. The event must be associated with the user who owns the authorization token.
-app.put("/delete-event/:id", authRoute(pool), async (req, res, next) => {
+app.delete("/delete-event/:id", authRoute(pool), async (req, res, next) => {
   try {
     const result = await pool.query(
       "DELETE FROM Event WHERE id=? AND user_id=?",
       [req.params.id, res.locals.userId]
     );
-    res.status(200).send({ affectedRows: result.affectedRows });
+    res.status(200).send({ success: Boolean(result.affectedRows) });
   } catch (e) {
     next(e);
   }
