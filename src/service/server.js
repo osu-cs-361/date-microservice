@@ -153,7 +153,9 @@ app.put("/edit-event/:id", authRoute(pool), async (req, res, next) => {
     query = query.slice(0, query.length - 2) + " WHERE id=? AND user_id=?;";
     queryParams.push(req.params.id, res.locals.userId);
     const result = await pool.query(query, queryParams);
-    res.status(200).send({ affectedRows: result.affectedRows, ...req.body });
+    res
+      .status(200)
+      .send({ success: Boolean(result.affectedRows), ...req.body });
   } catch (e) {
     next(e);
   }
