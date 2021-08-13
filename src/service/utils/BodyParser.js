@@ -14,23 +14,23 @@ const getEvent = (req) => {
 };
 
 const getExistingEventAttributes = (req) => {
-  const output = {};
+  const event = {};
   if (req.body.name) {
-    output.name = req.body.name;
+    event.name = req.body.name;
   }
   if (req.body.start) {
-    output.start = DateTime.fromJSDate(new Date(req.body.start));
+    event.start = DateTime.fromJSDate(new Date(req.body.start));
   }
   if (req.body.end) {
-    output.end = DateTime.fromJSDate(new Date(req.body.end));
+    event.end = DateTime.fromJSDate(new Date(req.body.end));
   }
-  if (output.start && !output.start.isValid) {
+  if (event.start && !event.start.isValid) {
     throw new DateTimeError("Invalid start date provided.");
   }
-  if (output.end && !output.end.isValid) {
+  if (event.end && !event.end.isValid) {
     throw new DateTimeError("Invalid end date provided.");
   }
-  return output;
+  return event;
 };
 
 module.exports.getEvent = getEvent;
